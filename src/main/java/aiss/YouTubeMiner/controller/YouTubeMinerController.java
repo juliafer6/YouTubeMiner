@@ -51,7 +51,7 @@ public class YouTubeMinerController {
             throw new ChannelNotFoundException(channelId);
         }
 
-        restTemplate.postForObject(videoMinerUrl + "/videominer/v1/channels", channel, Channel.class);
+        restTemplate.postForObject(videoMinerUrl + "/videominer/channels", channel, Channel.class);
 
         return ResponseEntity.ok(channel);
     }
