@@ -3,6 +3,7 @@ package aiss.YouTubeMiner.etl;
 import aiss.YouTubeMiner.model.videominer.*;
 import aiss.YouTubeMiner.model.youtube.*;
 import aiss.YouTubeMiner.service.YouTubeMinerService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -11,11 +12,8 @@ import java.util.List;
 @Component
 public class Transformer {
 
-    private final YouTubeMinerService youtubeService;
-
-    public Transformer(YouTubeMinerService youtubeService) {
-        this.youtubeService = youtubeService;
-    }
+    @Autowired
+    YouTubeMinerService youtubeService;
 
     public Channel buildChannel(String channelId, Integer maxVideos, Integer maxComments) {
         YouTubeChannelList channelResponse = youtubeService.getChannel(channelId);

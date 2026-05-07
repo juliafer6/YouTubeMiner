@@ -2,25 +2,23 @@ package aiss.YouTubeMiner.controller;
 
 import aiss.YouTubeMiner.exception.ChannelNotFoundException;
 import aiss.YouTubeMiner.model.videominer.Channel;
-import aiss.YouTubeMiner.service.YouTubeMinerService;
+import aiss.YouTubeMiner.etl.Transformer;
+import aiss.YouTubeMiner.service.VideoMinerService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.RestTemplate;
 
 @RestController
-@RequestMapping("/youtubemine")
+@RequestMapping("/youtubeminer/channels")
 public class YouTubeMinerController {
 
+    // ¡AQUÍ ESTÁ LA CLAVE! Usamos el Transformer que arreglamos antes
     @Autowired
-    private YouTubeMinerService service;
+    private Transformer transformer;
 
-    @Value("${videominer.base.url}")
-    private String videoMinerUrl;
-
-    private final RestTemplate restTemplate = new RestTemplate();
+    // Usamos el servicio nuevo que acabamos de crear
+    @Autowired
+    private VideoMinerService videoMinerService;
 
     // GET: solo lectura para pruebas, no envía a VideoMiner
     @GetMapping("/{channelId}")
@@ -29,7 +27,8 @@ public class YouTubeMinerController {
             @RequestParam(defaultValue = "10") int maxVideos,
             @RequestParam(defaultValue = "2") int maxComments) throws ChannelNotFoundException {
 
-        Channel channel = service.getChannel(channelId, maxVideos, maxComments);
+        // Llamamos al método buildChannel de TU Transformer
+        Channel channel = transformer.buildChannel(channelId, maxVideos, maxComments);
 
         if (channel == null) {
             throw new ChannelNotFoundException(channelId);
@@ -45,14 +44,16 @@ public class YouTubeMinerController {
             @RequestParam(defaultValue = "10") int maxVideos,
             @RequestParam(defaultValue = "2") int maxComments) throws ChannelNotFoundException {
 
-        Channel channel = service.getChannel(channelId, maxVideos, maxComments);
+        // 1. Transformamos los datos de YouTube a nuestro modelo
+        Channel channel = transformer.buildChannel(channelId, maxVideos, maxComments);
 
         if (channel == null) {
             throw new ChannelNotFoundException(channelId);
         }
 
-        restTemplate.postForObject(videoMinerUrl + "/videominer/channels", channel, Channel.class);
+        // 2. Lo enviamos usando el servicio limpio
+        Channel createdChannel = videoMinerService.postChannel(channel);
 
-        return ResponseEntity.ok(channel);
+        return ResponseEntity.ok(createdChannel);
     }
 }

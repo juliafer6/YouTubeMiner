@@ -1,6 +1,7 @@
 package aiss.YouTubeMiner.service;
 
 import aiss.YouTubeMiner.model.youtube.*;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -8,7 +9,8 @@ import org.springframework.web.client.RestTemplate;
 @Service
 public class YouTubeMinerService {
 
-    private RestTemplate restTemplate = new RestTemplate();
+    @Autowired
+    private RestTemplate restTemplate;
 
     @Value("${youtube.api.key}")
     private String apiKey;
