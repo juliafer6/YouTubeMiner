@@ -20,7 +20,7 @@ public class VideoMinerService {
     private String videoMinerUrl;
 
     public Channel postChannel(Channel channel) {
-        String url = videoMinerUrl + "/videominer/api/channels";
+        String url = videoMinerUrl + "/videominer/channels";
 
         HttpHeaders headers = new HttpHeaders();
         headers.set("X-API-KEY", "trabajoAiss123");
